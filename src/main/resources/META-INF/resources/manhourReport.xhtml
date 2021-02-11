@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+    xmlns:p="http://primefaces.org/ui">
+
+    <f:view contentType="text/html;charset=UTF-8" encoding="UTF-8">
+        <h:head>
+            <title>作業工数</title>
+            <h:outputStylesheet name="css/primeflex.min.css" />
+        </h:head>
+        <h:body>
+            <c:forEach items="#{workTaskController.todaysManhourFacts}" var="manhour">
+                <label>#{manhour.task.taskCode} : #{manhour.task.taskName} = </label>
+                #{workTaskController.toHHMM(manhour)}
+            </c:forEach>
+        </h:body>
+    </f:view>
+
+</html>

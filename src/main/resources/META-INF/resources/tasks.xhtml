@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <f:view contentType="text/html;charset=UTF-8" encoding="UTF-8">
+        <h:head>
+            <title>work-logger</title>
+            <h:outputStylesheet name="css/primeflex.min.css" />
+        </h:head>
+        <h:body>
+            <h:form>
+                <div class="p-formgroup-inline">
+                    <div class="p-field">
+                        <p:commandButton icon="pi pi-plus" value="Add New" actionListener="#{tasksView.addTask}" update="tasks" />
+                    </div>
+                    <div class="p-field">
+                        <p:commandButton icon="pi pi-save" value="Save" actionListener="#{tasksView.onSave}" update="tasks" />
+                    </div>
+                </div>
+                <pe:sheet id="tasks" var="task" value="#{tasksView.tasks}"
+                    rowKey="#{task.rowKey}">
+
+                    <f:facet name="header">Tasks</f:facet>
+                    <pe:sheetcolumn headerText="ID"
+                        readonly="true"
+                        value="#{task.id}" />
+                    <pe:sheetcolumn headerText="taskCode" value="#{task.taskCode}" />
+                    <pe:sheetcolumn headerText="taskName" value="#{task.taskName}" />
+                    <pe:sheetcolumn headerText="description" value="#{task.description}" />
+                    <pe:sheetcolumn headerText="availableFrom" value="#{task.availableFrom}" colType="date" dateFormat="YYYY-MM-DD">
+                        <f:convertDateTime type="localDate" pattern="yyyy-MM-dd" />
+                    </pe:sheetcolumn>
+                    <pe:sheetcolumn headerText="availableUntil" value="#{task.availableUntil}" colType="date" dateFormat="YYYY-MM-DD">
+                        <f:convertDateTime type="localDate" pattern="yyyy-MM-dd" />
+                    </pe:sheetcolumn>
+                </pe:sheet>
+            </h:form>
+        </h:body>
+    </f:view>
+</html>

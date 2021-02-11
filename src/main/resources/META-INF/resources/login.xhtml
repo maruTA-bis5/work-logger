@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:p="http://primefaces.org/ui">
+
+    <f:metadata>
+        <f:viewAction actionListener="#{loginView.processMessage}" />
+    </f:metadata>
+    <f:view contentType="text/html;charset=UTF-8" encoding="UTF-8">
+        <h:head>
+            <title>work-logger</title>
+        </h:head>
+        <h:body>
+            <p:messages global="true" />
+            <form action="j_security_check" method="post">
+                <div class="ui-fluid">
+                    <div class="p-field">
+                        <p:outputLabel for="@next" value="Username" />
+                        <p:inputText pt:name="j_username" />
+                    </div>
+                    <div class="p-field">
+                        <p:outputLabel for="@next" value="Password" />
+                        <p:password pt:name="j_password" />
+                    </div>
+                    <button type="submit">Login</button>
+                </div>
+            </form>
+        </h:body>
+    </f:view>
+
+</html>

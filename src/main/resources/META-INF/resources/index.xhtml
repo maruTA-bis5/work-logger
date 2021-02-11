@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:p="http://primefaces.org/ui">
+
+    <f:view contentType="text/html;charset=UTF-8" encoding="UTF-8">
+        <h:head>
+            <title>work-logger</title>
+            <h:outputStylesheet name="css/primeflex.min.css" />
+        </h:head>
+        <h:body>
+            <h:form>
+                <p:menubar>
+                    <p:submenu label="Config" icon="pi pi-cog">
+                        <p:menuitem value="User management" rendered="true" icon="pi pi-users" />
+                        <p:menuitem value="Tasks" url="tasks.xhtml" icon="pi pi-list" />
+                    </p:submenu>
+                    <p:submenu label="Report" icon="pi pi-chart-bar">
+                        <p:menuitem value="monthly report" icon="pi pi-table" />
+                        <p:menuitem value="today's manhour" icon="pi pi-clock" actionListener="#{workTaskController.openReport}" />
+                    </p:submenu>
+                    <f:facet name="options">
+                        <p:commandButton value="Logout" icon="pi pi-sign-out" />
+                    </f:facet>
+                </p:menubar>
+                <p:panel id="timeStamping" header="Time Stamping">
+                    <div class="ui-fluid">
+                        <div class="p-field p-grid">
+                            <p:clock mode="server" pattern="yyyy-MM-dd HH:mm:ss" />
+                        </div>
+                        <div class="p-field p-grid">
+                            <p:outputLabel for="@next" value="打刻コメント" />
+                            <p:inputText />
+                        </div>
+                    </div>
+                    <div class="p-formgroup-inline">
+                        <div class="p-field">
+                            <p:commandButton value="出勤"
+                                actionListener="#{attendanceController.onWorkStart}"
+                                disabled="#{not attendanceController.canWorkStart}"
+                                process="@this"
+                                update="timeStamping" />
+                        </div>
+                        <div class="p-field">
+                            <p:commandButton value="休憩開始"
+                                actionListener="#{attendanceController.onBreakStart}"
+                                disabled="#{not attendanceController.canBreakStart}"
+                                process="@this"
+                                update="timeStamping" />
+                        </div>
+                        <div class="p-field">
+                            <p:commandButton value="休憩終了"
+                                actionListener="#{attendanceController.onBreakEnd}"
+                                disabled="#{not attendanceController.canBreakEnd}"
+                                process="@this"
+                                update="timeStamping" />
+                        </div>
+                        <div class="p-field">
+                            <p:commandButton value="昼休み開始"
+                                actionListener="#{attendanceController.onLunchStart}"
+                                disabled="#{not attendanceController.canLunchStart}"
+                                process="@this"
+                                update="timeStamping" />
+                        </div>
+                        <div class="p-field">
+                            <p:commandButton value="昼休み終了"
+                                actionListener="#{attendanceController.onLunchEnd}"
+                                disabled="#{not attendanceController.canLunchEnd}"
+                                process="@this"
+                                update="timeStamping" />
+                        </div>
+                        <div class="p-field">
+                            <p:commandButton value="私用外出開始"
+                                actionListener="#{attendanceController.onPrivateOutStart}"
+                                disabled="#{not attendanceController.canPrivateOutStart}"
+                                process="@this"
+                                update="timeStamping" />
+                        </div>
+                        <div class="p-field">
+                            <p:commandButton value="私用外出終了"
+                                actionListener="#{attendanceController.onPrivateOutEnd}"
+                                disabled="#{not attendanceController.canPrivateOutEnd}"
+                                process="@this"
+                                update="timeStamping" />
+                        </div>
+                        <div class="p-field">
+                            <p:commandButton value="退勤"
+                                actionListener="#{attendanceController.onWorkEnd}"
+                                disabled="#{not attendanceController.canWorkEnd}"
+                                process="@this"
+                                update="timeStamping" />
+                        </div>
+                    </div>
+                </p:panel>
+
+                <p:panel header="Tasks">
+                    <p:commandButton value="作業終了(未割当開始)" action="#{workTaskController.finishWork}" update="tasks" />
+                    <p:dataView id="tasks" var="task" value="#{workTaskController.tasks}">
+                        <f:facet name="header">
+                            <p:outputLabel for="@next" value="現在のタスク: " />
+                            <ui:param name="current" value="#{workTaskController.currentTask}" />
+                            <h:outputText id="currentTask" value="#{current.taskCode}: #{current.taskName}" />
+                        </f:facet>
+                        <p:dataViewListItem>
+                            <div class="p-grid">
+                                <div class="p-col">
+                                    <h:outputText value="#{task.taskCode} : #{task.taskName}" />
+                                    <br />
+                                    <h:outputText value="#{task.description}" />
+                                </div>
+                                <div class="p-col-2">
+                                    <p:commandButton value="作業開始" action="#{workTaskController.startTask(task)}" update="tasks"/>
+                                </div>
+                            </div>
+                        </p:dataViewListItem>
+                    </p:dataView>
+                </p:panel>
+            </h:form>
+        </h:body>
+    </f:view>
+
+</html>
