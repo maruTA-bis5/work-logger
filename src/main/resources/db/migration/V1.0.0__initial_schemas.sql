@@ -14,7 +14,7 @@ CREATE TABLE task (
     description TEXT NULL,
     available_from DATE NOT NULL,
     available_until DATE NOT NULL,
-    version BIGINT NOT NULL DEFAULT 0,
+    version BIGINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE task_manhour_fact (
