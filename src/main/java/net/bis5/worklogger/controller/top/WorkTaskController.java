@@ -3,7 +3,11 @@ package net.bis5.worklogger.controller.top;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
@@ -73,20 +77,52 @@ public class WorkTaskController {
         workFinishEventBus.fire(new WorkFinishEvent(user));
     }
 
-    public List<TaskManhourFact> getTodaysManhourFacts() {
-        return TaskManhourFact.findByTargetDate(user, LocalDate.now());
+    public List<TaskManhourFactSummary> getTodaysManhourFactSummary() {
+        Map<Long, Optional<TaskManhourFactSummary>> summaries = TaskManhourFact.findByTargetDate(user, LocalDate.now()).stream()
+            .map(TaskManhourFactSummary::new)
+            .collect(Collectors.groupingBy(t -> t.task.id, Collectors.reducing(TaskManhourFactSummary::add)));
+        return summaries.entrySet().stream()
+            .filter(e -> e.getValue().isPresent())
+            .map(Map.Entry::getValue)
+            .map(Optional::get)
+            .sorted(Comparator.comparing(s -> s.task.taskCode))
+            .collect(Collectors.toList());
     }
 
-    public String toHHMM(TaskManhourFact task) {
-        int mins = task.totalMins;
-        if (task.workEndAt == null) {
-            var workDuration = Duration.between(task.workStartAt, ZonedDateTime.now());
-            long secs = workDuration.getSeconds();
-            mins = (int) (secs / 60);
+    public static class TaskManhourFactSummary {
+        
+        private final Task task;
+        private final int mins;
+
+        private TaskManhourFactSummary(Task task, int mins) {
+            this.task = task;
+            this.mins = mins;
         }
-        var hour = mins / 60;
-        var min = mins % 60;
-        return String.format("%d:%02d", hour, min);
+
+        private TaskManhourFactSummary(TaskManhourFact manhour) {
+            this.task = manhour.task;
+            if (manhour.workEndAt == null) {
+                var workDuration = Duration.between(manhour.workStartAt, ZonedDateTime.now());
+                long secs = workDuration.getSeconds();
+                mins = (int) (secs / 60);
+            } else {
+                mins = manhour.totalMins;
+            }
+        }
+
+        public TaskManhourFactSummary add(TaskManhourFactSummary manhour) {
+            return new TaskManhourFactSummary(this.task, this.mins + manhour.mins);
+        }
+
+        public String toHHMM() {
+            var hour = mins / 60;
+            var min = mins % 60;
+            return String.format("%d:%02d", hour, min);
+        }
+
+        public Task getTask() {
+            return task;
+        }
     }
 
     public void openReport() {

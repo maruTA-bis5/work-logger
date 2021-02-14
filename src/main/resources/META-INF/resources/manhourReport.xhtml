@@ -14,9 +14,11 @@
             <h:outputStylesheet name="css/primeflex.min.css" />
         </h:head>
         <h:body>
-            <c:forEach items="#{workTaskController.todaysManhourFacts}" var="manhour">
-                <label>#{manhour.task.taskCode} : #{manhour.task.taskName} = </label>
-                #{workTaskController.toHHMM(manhour)}
+            <c:forEach items="#{workTaskController.todaysManhourFactSummary}" var="manhour">
+                <p>
+                    <label>#{manhour.task.taskCode} : #{manhour.task.taskName} = </label>
+                    #{manhour.toHHMM()}
+                </p>
             </c:forEach>
         </h:body>
     </f:view>
