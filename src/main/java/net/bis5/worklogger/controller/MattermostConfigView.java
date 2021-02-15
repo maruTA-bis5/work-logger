@@ -41,6 +41,12 @@ public class MattermostConfigView implements Serializable {
 
     public void loadCurrent() {
         config = MattermostConfig.findByUser(user).orElseGet(MattermostConfig::new);
+        if (config.mattermostUrl != null && config.mattermostUsername != null && config.mattermostPassword != null) {
+            testConnection();
+            if (config.teamId != null) {
+                onTeamChanged();
+            }
+        }
     }
 
     public void testConnection() {
