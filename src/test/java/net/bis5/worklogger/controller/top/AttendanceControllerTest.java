@@ -24,6 +24,7 @@ import net.bis5.worklogger.controller.top.WorkFinishEventConsumer.WorkFinishEven
 import net.bis5.worklogger.entity.AttendanceFact;
 import net.bis5.worklogger.entity.BreakFact;
 import net.bis5.worklogger.entity.BreakKind;
+import net.bis5.worklogger.service.MattermostNotifyEvent;
 
 @QuarkusTest
 class AttendanceControllerTest {
@@ -38,9 +39,10 @@ class AttendanceControllerTest {
         void setUp() {
             request = mock(HttpServletRequest.class);
             when(request.getRemoteUser()).thenReturn("user");
-            Event<WorkFinishEvent> eventBus = mock(Event.class);
+            Event<WorkFinishEvent> workFinishEventBus = mock(Event.class);
+            Event<MattermostNotifyEvent> notifyEventBus = mock(Event.class);
 
-            controller = new AttendanceController(request, eventBus);
+            controller = new AttendanceController(request, workFinishEventBus, notifyEventBus);
         }
 
         @AfterEach
