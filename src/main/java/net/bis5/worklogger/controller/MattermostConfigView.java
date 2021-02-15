@@ -3,6 +3,8 @@ package net.bis5.worklogger.controller;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.faces.application.FacesMessage;
@@ -53,6 +55,9 @@ public class MattermostConfigView implements Serializable {
                 .map(t -> new SelectItem(t.getId(), t.getDisplayName()))
                 .collect(Collectors.toList());
             client.logout();
+        } catch (RuntimeException e) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Unable to login", e.getMessage()));
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -74,6 +79,8 @@ public class MattermostConfigView implements Serializable {
                 .map(c -> new SelectItem(c.getId(), c.getDisplayName()))
                 .collect(Collectors.toList());
             client.logout();
+        } catch (RuntimeException e) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
