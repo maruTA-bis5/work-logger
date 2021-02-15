@@ -18,6 +18,7 @@
                     <p:submenu label="Config" icon="pi pi-cog">
                         <p:menuitem value="User management" rendered="true" icon="pi pi-users" />
                         <p:menuitem value="Tasks" url="tasks.xhtml" icon="pi pi-list" />
+                        <p:menuitem value="Mattermost config" url="mattermostConfig.xhtml" icon="pi pi-comment" />
                     </p:submenu>
                     <p:submenu label="Report" icon="pi pi-chart-bar">
                         <p:menuitem value="monthly report" icon="pi pi-table" />
@@ -34,7 +35,7 @@
                         </div>
                         <div class="p-field p-grid">
                             <p:outputLabel for="@next" value="打刻コメント" />
-                            <p:inputText />
+                            <p:inputText id="commentary" value="#{attendanceController.commentary}" />
                         </div>
                     </div>
                     <div class="p-formgroup-inline">
@@ -42,56 +43,56 @@
                             <p:commandButton value="出勤"
                                 actionListener="#{attendanceController.onWorkStart}"
                                 disabled="#{not attendanceController.canWorkStart}"
-                                process="@this"
+                                process="@this commentary"
                                 update="timeStamping" />
                         </div>
                         <div class="p-field">
                             <p:commandButton value="休憩開始"
                                 actionListener="#{attendanceController.onBreakStart}"
                                 disabled="#{not attendanceController.canBreakStart}"
-                                process="@this"
+                                process="@this commentary"
                                 update="timeStamping" />
                         </div>
                         <div class="p-field">
                             <p:commandButton value="休憩終了"
                                 actionListener="#{attendanceController.onBreakEnd}"
                                 disabled="#{not attendanceController.canBreakEnd}"
-                                process="@this"
+                                process="@this commentary"
                                 update="timeStamping" />
                         </div>
                         <div class="p-field">
                             <p:commandButton value="昼休み開始"
                                 actionListener="#{attendanceController.onLunchStart}"
                                 disabled="#{not attendanceController.canLunchStart}"
-                                process="@this"
+                                process="@this commentary"
                                 update="timeStamping" />
                         </div>
                         <div class="p-field">
                             <p:commandButton value="昼休み終了"
                                 actionListener="#{attendanceController.onLunchEnd}"
                                 disabled="#{not attendanceController.canLunchEnd}"
-                                process="@this"
+                                process="@this commentary"
                                 update="timeStamping" />
                         </div>
                         <div class="p-field">
                             <p:commandButton value="私用外出開始"
                                 actionListener="#{attendanceController.onPrivateOutStart}"
                                 disabled="#{not attendanceController.canPrivateOutStart}"
-                                process="@this"
+                                process="@this commentary"
                                 update="timeStamping" />
                         </div>
                         <div class="p-field">
                             <p:commandButton value="私用外出終了"
                                 actionListener="#{attendanceController.onPrivateOutEnd}"
                                 disabled="#{not attendanceController.canPrivateOutEnd}"
-                                process="@this"
+                                process="@this commentary"
                                 update="timeStamping" />
                         </div>
                         <div class="p-field">
                             <p:commandButton value="退勤"
                                 actionListener="#{attendanceController.onWorkEnd}"
                                 disabled="#{not attendanceController.canWorkEnd}"
-                                process="@this"
+                                process="@this commentary"
                                 update="timeStamping" />
                         </div>
                     </div>

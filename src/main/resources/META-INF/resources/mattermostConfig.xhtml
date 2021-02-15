@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+    xmlns:p="http://primefaces.org/ui">
+
+    <f:view contentType="text/html;charset=UTF-8" encoding="UTF-8">
+        <f:metadata>
+            <f:viewAction actionListener="#{mattermostConfigView.loadCurrent}" />
+        </f:metadata>
+        <h:head>
+            <title>Mattermost config</title>
+            <h:outputStylesheet name="css/primeflex.min.css" />
+        </h:head>
+        <h:body>
+            <p:messages global="true">
+                <p:autoUpdate />
+            </p:messages>
+            <h:form>
+                <p:panel header="Credencial">
+                    <div class="ui-fluid">
+                        <div class="p-field">
+                            <p:outputLabel for="@next" value="URL" />
+                            <p:inputText value="#{mattermostConfigView.config.mattermostUrl}" />
+                        </div>
+                        <div class="p-field">
+                            <p:outputLabel for="@next" value="Username" />
+                            <p:inputText value="#{mattermostConfigView.config.mattermostUsername}" />
+                        </div>
+                        <div class="p-field">
+                            <p:outputLabel for="@next" value="Password" />
+                            <p:password value="#{mattermostConfigView.config.mattermostPassword}" />
+                        </div>
+                    </div>
+                    <div class="p-formgroup-inline">
+                        <div class="p-field">
+                            <p:commandButton styleClass="ui-command-secondary" value="Test Connection" actionListener="#{mattermostConfigView.testConnection}" update="teamList" />
+                        </div>
+                    </div>
+                </p:panel>
+                <p:panel header="Channel">
+                    <div class="ui-fluid">
+                        <div class="p-field">
+                            <p:outputLabel for="@next" value="Team" />
+                            <p:selectOneMenu id="teamList" value="#{mattermostConfigView.config.teamId}">
+                                <f:selectItem value="#{null}" />
+                                <f:selectItems value="#{mattermostConfigView.teams}" />
+                                <p:ajax event="itemSelect" listener="#{mattermostConfigView.onTeamChanged}" update="channelList" />
+                            </p:selectOneMenu>
+                        </div>
+                        <div class="p-field">
+                            <p:outputLabel for="@next" value="Channel" />
+                            <p:selectOneMenu id="channelList" value="#{mattermostConfigView.config.channelId}">
+                                <f:selectItems value="#{mattermostConfigView.channels}" />
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                </p:panel>
+                <p:commandButton process="@form" update="@form" value="Save" actionListener="#{mattermostConfigView.save}" />
+            </h:form>
+        </h:body>
+    </f:view>
+
+</html>

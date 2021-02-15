@@ -19,6 +19,8 @@ import net.bis5.worklogger.entity.AttendanceFact;
 import net.bis5.worklogger.entity.BreakFact;
 import net.bis5.worklogger.entity.BreakKind;
 import net.bis5.worklogger.entity.WorkUser;
+import net.bis5.worklogger.service.MattermostNotifyEvent;
+import net.bis5.worklogger.service.MattermostNotifyEvent.PostType;
 
 @Named
 @ViewScoped
@@ -26,11 +28,13 @@ public class AttendanceController implements Serializable {
 
     private final HttpServletRequest request;
     private final Event<WorkFinishEvent> workFinishEventBus;
+    private final Event<MattermostNotifyEvent> notifyEventBus;
 
     @Inject
-    public AttendanceController(HttpServletRequest request, Event<WorkFinishEvent> workFinishEventBus) {
+    public AttendanceController(HttpServletRequest request, Event<WorkFinishEvent> workFinishEventBus, Event<MattermostNotifyEvent> notifyEventBus) {
         this.request = request;
         this.workFinishEventBus = workFinishEventBus;
+        this.notifyEventBus = notifyEventBus;
     }
 
     private WorkUser user;
@@ -40,6 +44,16 @@ public class AttendanceController implements Serializable {
         user = WorkUser.findByUserName(request.getRemoteUser()).get();
     }
 
+    private String commentary;
+
+    public String getCommentary() {
+        return commentary;
+    }
+
+    public void setCommentary(String commentary) {
+        this.commentary = commentary;
+    }
+
     @Transactional
     public void onWorkStart() {
         var attendance = new AttendanceFact();
@@ -47,6 +61,8 @@ public class AttendanceController implements Serializable {
         attendance.targetDate = LocalDate.now();
         attendance.workStartAt = ZonedDateTime.now();
         attendance.persist();
+        notifyEventBus.fire(new MattermostNotifyEvent(user, PostType.WORK_START, getCommentary()));
+        setCommentary(null);
     }
 
     public boolean isCanWorkStart() {
@@ -55,14 +71,16 @@ public class AttendanceController implements Serializable {
 
     @Transactional
     public void onWorkEnd() {
-        onBreakEnd();
-        onLunchEnd();
-        onPrivateOutEnd();
+        Arrays.stream(BreakKind.values())
+            .map(this::findInProgressBreak)
+            .forEach(b -> b.ifPresent(this::endBreak));
         fireWorkFinishEvent();
         findAttendanceFact().ifPresent(a -> {
             a.workEndAt = ZonedDateTime.now();
             a.merge();
         });
+        notifyEventBus.fire(new MattermostNotifyEvent(user, PostType.WORK_END, getCommentary()));
+        setCommentary(null);
     }
 
     private boolean isWorkStarted() {
@@ -79,6 +97,8 @@ public class AttendanceController implements Serializable {
     @Transactional
     public void onBreakStart() {
         onBreakStart(BreakKind.BREAK);
+        notifyEventBus.fire(new MattermostNotifyEvent(user, PostType.BREAK_START, getCommentary()));
+        setCommentary(null);
     }
 
     private void onBreakStart(BreakKind kind) {
@@ -111,6 +131,8 @@ public class AttendanceController implements Serializable {
     @Transactional
     public void onBreakEnd() {
         onBreakEnd(BreakKind.BREAK);
+        notifyEventBus.fire(new MattermostNotifyEvent(user, PostType.BREAK_END, getCommentary()));
+        setCommentary(null);
     }
 
     private void onBreakEnd(BreakKind kind) {
@@ -129,6 +151,8 @@ public class AttendanceController implements Serializable {
     @Transactional
     public void onLunchStart() {
         onBreakStart(BreakKind.LUNCH);
+        notifyEventBus.fire(new MattermostNotifyEvent(user, PostType.LUNCH_START, getCommentary()));
+        setCommentary(null);
     }
 
     public boolean isCanLunchStart() {
@@ -138,6 +162,8 @@ public class AttendanceController implements Serializable {
     @Transactional
     public void onLunchEnd() {
         onBreakEnd(BreakKind.LUNCH);
+        notifyEventBus.fire(new MattermostNotifyEvent(user, PostType.LUNCH_END, getCommentary()));
+        setCommentary(null);
     }
 
     public boolean isCanLunchEnd() {
@@ -147,6 +173,8 @@ public class AttendanceController implements Serializable {
     @Transactional
     public void onPrivateOutStart() {
         onBreakStart(BreakKind.PRIVATE_OUT);
+        notifyEventBus.fire(new MattermostNotifyEvent(user, PostType.PRIVATE_OUT_START, getCommentary()));
+        setCommentary(null);
     }
 
     public boolean isCanPrivateOutStart() {
@@ -156,6 +184,8 @@ public class AttendanceController implements Serializable {
     @Transactional
     public void onPrivateOutEnd() {
         onBreakEnd(BreakKind.PRIVATE_OUT);
+        notifyEventBus.fire(new MattermostNotifyEvent(user, PostType.PRIVATE_OUT_END, getCommentary()));
+        setCommentary(null);
     }
 
     public boolean isCanPrivateOutEnd() {
