@@ -51,7 +51,7 @@
                                 actionListener="#{attendanceController.onBreakStart}"
                                 disabled="#{not attendanceController.canBreakStart}"
                                 process="@this commentary"
-                                update="timeStamping" />
+                                update="timeStamping tasks:currentTask" />
                         </div>
                         <div class="p-field">
                             <p:commandButton value="休憩終了"
@@ -65,7 +65,7 @@
                                 actionListener="#{attendanceController.onLunchStart}"
                                 disabled="#{not attendanceController.canLunchStart}"
                                 process="@this commentary"
-                                update="timeStamping" />
+                                update="timeStamping tasks:currentTask" />
                         </div>
                         <div class="p-field">
                             <p:commandButton value="昼休み終了"
@@ -79,7 +79,7 @@
                                 actionListener="#{attendanceController.onPrivateOutStart}"
                                 disabled="#{not attendanceController.canPrivateOutStart}"
                                 process="@this commentary"
-                                update="timeStamping" />
+                                update="timeStamping tasks:currentTask" />
                         </div>
                         <div class="p-field">
                             <p:commandButton value="私用外出終了"
@@ -93,7 +93,7 @@
                                 actionListener="#{attendanceController.onWorkEnd}"
                                 disabled="#{not attendanceController.canWorkEnd}"
                                 process="@this commentary"
-                                update="timeStamping" />
+                                update="timeStamping tasks:currentTask" />
                         </div>
                     </div>
                 </p:panel>
