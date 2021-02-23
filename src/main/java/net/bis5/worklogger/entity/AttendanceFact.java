@@ -3,8 +3,9 @@ package net.bis5.worklogger.entity;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.Column;
@@ -52,6 +53,14 @@ public class AttendanceFact extends PanacheEntityBase implements Serializable {
     public static Optional<AttendanceFact> findByTargetDate(WorkUser user, LocalDate targetDate) {
         return Optional.ofNullable(AttendanceFact.<AttendanceFact>find("user = :user AND targetDate = :targetDate",
             Parameters.with("user", user).and("targetDate", targetDate)).firstResult());
+    }
+
+    public static List<AttendanceFact> findByYearMonth(WorkUser user, YearMonth targetMonth) {
+        return find("user = :user AND targetDate BETWEEN :from AND :to", 
+            Parameters.with("user", user)
+                .and("from", targetMonth.atDay(1))
+                .and("to", targetMonth.atEndOfMonth())
+            ).list();
     }
 
     private void preSave() {

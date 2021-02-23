@@ -3,6 +3,7 @@ package net.bis5.worklogger.entity;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -80,6 +81,14 @@ public class TaskManhourFact extends PanacheEntityBase implements Serializable {
         return find("from TaskManhourFact f inner join fetch f.task t where t.user = :user and f.targetDate = :targetDate",
             Parameters.with("user", user).and("targetDate", targetDate))
             .list();
+    }
+
+    public static List<TaskManhourFact> findByYearMonth(WorkUser user, YearMonth targetMonth) {
+        return find("from TaskManhourFact f inner join fetch f.task t where t.user = :user AND f.targetDate BETWEEN :from AND :to", 
+            Parameters.with("user", user)
+                .and("from", targetMonth.atDay(1))
+                .and("to", targetMonth.atEndOfMonth())
+            ).list();
     }
 
 }

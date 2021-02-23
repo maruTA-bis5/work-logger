@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+    xmlns:p="http://primefaces.org/ui">
+
+    <f:view contentType="text/html;charset=UTF-8" encoding="UTF-8">
+        <h:head>
+            <title>Monthly Report</title>
+            <h:outputStylesheet name="css/primeflex.min.css" />
+        </h:head>
+        <h:body>
+        <h:form>
+            <div class="p-formgroup-inline">
+                <div class="p-field">
+                    <p:outputLabel for="@next" value="対象年月" />
+                    <p:datePicker id="targetMonth" value="#{monthlyReportView.targetMonth}"
+                        view="month" pattern="yyyy/MM" yearNavigator="true" />
+                </div>
+                <p:commandButton action="#{monthlyReportView.refresh}" process="@this targetMonth" update="@form" value="Refresh" />
+            </div>
+            <p:dataTable value="#{monthlyReportView.rows}" var="row" stripedRows="true">
+                <p:column headerText="日付">
+                    <h:outputText value="#{row.targetDate}">
+                        <f:convertDateTime type="localDate" pattern="MM/dd(E)" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="出勤">
+                    <h:outputText value="#{row.attendance.workStartAt}">
+                        <f:convertDateTime type="zonedDateTime" pattern="HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="退勤">
+                    <h:outputText value="#{row.attendance.workEndAt}">
+                        <f:convertDateTime type="zonedDateTime" pattern="HH:mm" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="休憩">
+                    #{monthlyReportView.toHHMM(row.breakMins)}
+                </p:column>
+                <p:column headerText="昼休み">
+                    #{monthlyReportView.toHHMM(row.lunchMins)}
+                </p:column>
+                <p:column headerText="私用外出">
+                    #{monthlyReportView.toHHMM(row.privateOutMins)}
+                </p:column>
+                <p:column headerText="勤務時間数">
+                    #{monthlyReportView.toHHMM(row.attendance.totalMins - row.breakMins - row.lunchMins - row.privateOutMins)}
+                </p:column>
+                <p:columns value="#{monthlyReportView.tasks}" var="task" headerText="#{task.taskCode}:#{task.taskName}">
+                    #{monthlyReportView.toHHMM(row.getManhourMinsByTaskId(task.id))}
+                </p:columns>
+            </p:dataTable>
+            <p:dataTable value="#{monthlyReportView.tasks}" var="task">
+                <p:column headerText="タスクコード">
+                    #{task.taskCode}
+                </p:column>
+                <p:column headerText="タスク名">
+                    #{task.taskName}
+                </p:column>
+                <p:column headerText="時間">
+                    #{monthlyReportView.toHHMM(monthlyReportView.getManhourMins(task.id))}
+                </p:column>
+            </p:dataTable>
+        </h:form>
+        </h:body>
+    </f:view>
+</html>

@@ -3,6 +3,7 @@ package net.bis5.worklogger.entity;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.persistence.Column;
@@ -62,5 +63,15 @@ public class Task extends PanacheEntityBase implements Serializable {
 
     public void merge() {
         getEntityManager().merge(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Task && this.id == ((Task)obj).id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.id);
     }
 }

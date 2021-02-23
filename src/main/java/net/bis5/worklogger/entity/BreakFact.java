@@ -3,7 +3,9 @@ package net.bis5.worklogger.entity;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.Column;
@@ -74,4 +76,13 @@ public class BreakFact extends PanacheEntityBase implements Serializable {
                 Parameters.with("user", user).and("targetDate", targetDate).and("kind", kind)).firstResult()
         );
     }
+
+    public static List<BreakFact> findByYearMonth(WorkUser user, YearMonth targetMonth) {
+        return find("user = :user AND targetDate BETWEEN :from AND :to", 
+            Parameters.with("user", user)
+                .and("from", targetMonth.atDay(1))
+                .and("to", targetMonth.atEndOfMonth())
+            ).list();
+    }
+
 }
