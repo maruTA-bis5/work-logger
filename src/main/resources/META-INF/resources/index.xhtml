@@ -16,7 +16,8 @@
             <h:form>
                 <p:menubar>
                     <p:submenu label="Config" icon="pi pi-cog">
-                        <p:menuitem value="User management" rendered="true" icon="pi pi-users" />
+                        <p:menuitem value="User management" rendered="false" icon="pi pi-users" />
+                        <p:menuitem value="Change Password" icon="pi pi-key" actionListener="#{userController.changePassword}" />
                         <p:menuitem value="Tasks" url="tasks.xhtml" icon="pi pi-list" />
                         <p:menuitem value="Mattermost config" url="mattermostConfig.xhtml" icon="pi pi-comment" />
                     </p:submenu>

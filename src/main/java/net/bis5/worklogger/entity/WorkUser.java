@@ -54,4 +54,10 @@ public class WorkUser extends PanacheEntityBase implements Serializable {
     public void merge() {
         getEntityManager().merge(this);
     }
+
+	public void updatePassword(String current, String newPassword) {
+        // TODO verify current password
+        this.password = BcryptUtil.bcryptHash(newPassword);
+        merge();
+	}
 }
