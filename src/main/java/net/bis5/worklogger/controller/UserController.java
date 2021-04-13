@@ -1,23 +1,28 @@
 package net.bis5.worklogger.controller;
 
+import java.io.IOException;
+
 import javax.enterprise.inject.Model;
-import javax.enterprise.inject.spi.CDI;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 
 import org.primefaces.PrimeFaces;
 
-import io.quarkus.security.identity.SecurityIdentity;
 import net.bis5.worklogger.entity.WorkUser;
 
 @Model
 public class UserController {
 
     private final WorkUser user;
+    private final HttpServletRequest request;
 
     @Inject
     public UserController(HttpServletRequest request) {
+        this.request = request;
         user = WorkUser.findByUserName(request.getRemoteUser()).get();
     }
 
@@ -47,5 +52,12 @@ public class UserController {
     public void applyChangePassword() {
         changePassword.apply();
         PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public String logout() {
+        var session = (HttpSession)FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+        session.invalidate();
+        FacesContext.getCurrentInstance().getExternalContext().addResponseCookie("JSESSIONID", null, null);
+        return "login.xhtml?faces-redirect=true";
     }
 }
