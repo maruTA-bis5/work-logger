@@ -29,7 +29,7 @@
                         itemLabel="同じタスクコードの作業時間を合算" />
                 </div>
             </div>
-            <p:dataTable value="#{monthlyReportView.rows}" var="row" stripedRows="true">
+            <p:dataTable value="#{monthlyReportView.rows}" var="row" stripedRows="true" stickyHeader="true">
                 <p:column headerText="日付">
                     <h:outputText value="#{row.targetDate}">
                         <f:convertDateTime type="localDate" pattern="MM/dd(E)" />
