@@ -21,7 +21,13 @@
                     <p:datePicker id="targetMonth" value="#{monthlyReportView.targetMonth}"
                         view="month" pattern="yyyy/MM" yearNavigator="true" />
                 </div>
-                <p:commandButton action="#{monthlyReportView.refresh}" process="@this targetMonth" update="@form" value="Refresh" />
+                <div class="p-field">
+                    <p:commandButton action="#{monthlyReportView.refresh}" process="@this targetMonth sum" update="@form" value="Refresh" />
+                </div>
+                <div class="p-field">
+                    <p:selectBooleanCheckbox id="sum" value="#{monthlyReportView.sumSameCodeWork}"
+                        itemLabel="同じタスクコードの作業時間を合算" />
+                </div>
             </div>
             <p:dataTable value="#{monthlyReportView.rows}" var="row" stripedRows="true">
                 <p:column headerText="日付">

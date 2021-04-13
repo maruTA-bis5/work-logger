@@ -5,6 +5,8 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,6 +14,8 @@ import java.util.stream.Collectors;
 import javax.enterprise.inject.Model;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import net.bis5.worklogger.entity.AttendanceFact;
 import net.bis5.worklogger.entity.BreakFact;
@@ -40,6 +44,16 @@ public class MonthlyReportView {
         return targetMonth;
     }
 
+    private boolean sumSameCodeWork;
+
+    public void setSumSameCodeWork(boolean sumSameCodeWork) {
+        this.sumSameCodeWork = sumSameCodeWork;
+    }
+
+    public boolean isSumSameCodeWork() {
+        return sumSameCodeWork;
+    }
+
     public void refresh() {
         List<AttendanceFact> attendanceFacts = AttendanceFact.findByYearMonth(user, targetMonth);
         List<BreakFact> breakFacts = BreakFact.findByYearMonth(user, targetMonth);
@@ -59,14 +73,50 @@ public class MonthlyReportView {
             .collect(Collectors.toList());
 
         rows = new ArrayList<>();
+        Map</*taskId*/Long, /*taskCode*/String> taskCodeDic = tasks.stream().collect(Collectors.toMap(t -> t.id, t -> t.taskCode));
         for (LocalDate d = targetMonth.atDay(1); YearMonth.from(d).equals(targetMonth); d = d.plusDays(1)) {
-            rows.add(new ReportRow(d, attendanceByDate.get(d), breaksByDate.getOrDefault(d, Collections.emptyList()), manhoursByTaskByDate.getOrDefault(d, Collections.emptyMap())));
+            Map</*taskId*/Long, List<TaskManhourFact>> manhours = manhoursByTaskByDate.getOrDefault(d, Collections.emptyMap());
+            if (sumSameCodeWork) {
+                // 同一タスクコードのtaskIdにはおなじListをセットしておく
+                Map</*taskCode*/String, List<TaskManhourFact>> manhoursByTaskCode
+                    = manhours.entrySet().stream()
+                        .map(e -> Pair.of(taskCodeDic.get(e.getKey()), e.getValue()))
+                        .collect(Collectors.groupingBy(Pair::getKey, Collectors.flatMapping(e -> e.getValue().stream(), Collectors.toList())));
+                manhours = manhours.entrySet().stream()
+                    .map(e -> Pair.of(e.getKey(), manhoursByTaskCode.getOrDefault(taskCodeDic.get(e.getKey()), Collections.emptyList())))
+                    .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
+            }
+            rows.add(new ReportRow(d, attendanceByDate.get(d), breaksByDate.getOrDefault(d, Collections.emptyList()), manhours));
         }
-        manhourMinsByTask = manhoursByTaskByDate.values().stream()
-            .map(Map::values)
-            .flatMap(Collection::stream)
-            .flatMap(List::stream)
-            .collect(Collectors.groupingBy(m -> m.task.id, Collectors.summingInt(m -> m.totalMins)));
+        if (sumSameCodeWork) {
+            Map</*taskCode*/String, Task> tasksToDisplay = new HashMap<>();
+            for (var task : tasks) {
+                String code  = task.taskCode;
+                Task toDisplay = tasksToDisplay.computeIfAbsent(code, c -> { var t = new Task(); t.id = task.id; t.taskCode = c; return t;});
+                if (toDisplay.taskName == null) {
+                    toDisplay.taskName = task.taskName;
+                } else {
+                    toDisplay.taskName += "," + task.taskName;
+                }
+                tasksToDisplay.put(code, toDisplay);
+            }
+            tasks = new ArrayList<>(tasksToDisplay.values());
+            tasks.sort(Comparator.comparing(t -> t.taskCode));
+
+            manhourMinsByTask = manhoursByTaskByDate.values().stream()
+                .map(Map::entrySet)
+                .flatMap(Collection::stream)
+                .map(e -> Pair.of(taskCodeDic.get(e.getKey()), e.getValue())) // Stream<Pair<taskCode, List<TaskManhourFact>>>
+                .map(e -> Pair.of(tasksToDisplay.get(e.getKey()), e.getValue()))
+                .collect(Collectors.groupingBy(e -> e.getKey().id, 
+                    Collectors.flatMapping(e -> e.getValue().stream(), Collectors.summingInt(m -> m.totalMins))));
+        } else {
+            manhourMinsByTask = manhoursByTaskByDate.values().stream()
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .flatMap(List::stream)
+                .collect(Collectors.groupingBy(m -> m.task.id, Collectors.summingInt(m -> m.totalMins)));
+        }
     }
 
     private List<ReportRow> rows;
