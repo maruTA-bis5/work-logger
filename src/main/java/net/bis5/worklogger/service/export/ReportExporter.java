@@ -5,6 +5,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.bbreak.excella.reports.exporter.ExcelExporter;
@@ -105,8 +107,8 @@ public class ReportExporter {
             int dayOfMonth = day.getTargetDate().getDayOfMonth();
             Date juDate = Date.from(day.getTargetDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
             reportSheet.addParam(SingleParamParser.DEFAULT_TAG, parameter.getDateTag(dayOfMonth), juDate);
-            reportSheet.addParam(SingleParamParser.DEFAULT_TAG, parameter.getWorkStartTimeTag(dayOfMonth), Format.toHHMM(day.getWorkStartAt()));
-            reportSheet.addParam(SingleParamParser.DEFAULT_TAG, parameter.getWorkEndTimeTag(dayOfMonth), Format.toHHMM(day.getWorkEndAt()));
+            reportSheet.addParam(SingleParamParser.DEFAULT_TAG, parameter.getWorkStartTimeTag(dayOfMonth), toPoiTime(day.getWorkStartAt()));
+            reportSheet.addParam(SingleParamParser.DEFAULT_TAG, parameter.getWorkEndTimeTag(dayOfMonth), toPoiTime(day.getWorkEndAt()));
             reportSheet.addParam(SingleParamParser.DEFAULT_TAG, parameter.getRestTimeTag(dayOfMonth), Format.toHours(day.getBreakMins()));
             for (Task task : tasks) {
                 int taskSeq = taskSeqById.get(task.id);
@@ -115,5 +117,9 @@ public class ReportExporter {
         }
 
         return reportBook;
+    }
+
+    private Double toPoiTime(ZonedDateTime time) {
+        return time != null ? DateUtil.convertTime(Format.toHHMM(time)) : null;
     }
 }
