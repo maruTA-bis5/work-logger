@@ -64,6 +64,11 @@ public class ReportExporter {
                     .map(ReportSheet::new)
                     .forEach(reportBook::addReportSheet);
             }
+
+            @Override
+            public void postBookParse(Workbook workbook, ReportBook reportBook) {
+                workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+            }
         });
         try {
             Path reportFile = Files.createTempFile("report", ".tmp");
