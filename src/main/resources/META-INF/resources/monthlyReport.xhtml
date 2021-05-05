@@ -36,12 +36,12 @@
                     </h:outputText>
                 </p:column>
                 <p:column headerText="出勤">
-                    <h:outputText value="#{row.attendance.workStartAt}">
+                    <h:outputText value="#{row.workStartAt}">
                         <f:convertDateTime type="zonedDateTime" pattern="HH:mm" />
                     </h:outputText>
                 </p:column>
                 <p:column headerText="退勤">
-                    <h:outputText value="#{row.attendance.workEndAt}">
+                    <h:outputText value="#{row.workEndAt}">
                         <f:convertDateTime type="zonedDateTime" pattern="HH:mm" />
                     </h:outputText>
                 </p:column>
@@ -55,7 +55,7 @@
                     #{monthlyReportView.toHHMM(row.privateOutMins)}
                 </p:column>
                 <p:column headerText="勤務時間数">
-                    #{monthlyReportView.toHHMM(row.attendance.totalMins - row.breakMins - row.lunchMins - row.privateOutMins)}
+                    #{monthlyReportView.toHHMM(row.totalWorkMins)}
                 </p:column>
                 <p:columns value="#{monthlyReportView.tasks}" var="task" headerText="#{task.taskCode}:#{task.taskName}">
                     #{monthlyReportView.toHHMM(row.getManhourMinsByTaskId(task.id))}

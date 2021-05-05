@@ -20,7 +20,14 @@
     <myfaces.version>2.3-next-M4</myfaces.version>
     <primefaces.version>10.0.0</primefaces.version>
     <primefaces-extensions.version>10.0.0</primefaces-extensions.version>
+    <excella-reports.version>2.0</excella-reports.version>
   </properties>
+  <repositories>
+    <repository>
+      <id>excella</id>
+      <url>https://excella-core.github.io/maven2</url>
+    </repository>
+  </repositories>
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -105,6 +112,11 @@
       <groupId>net.bis5.mattermost4j</groupId>
       <artifactId>mattermost4j-core</artifactId>
       <version>0.22.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bbreak.excella</groupId>
+      <artifactId>excella-reports</artifactId>
+      <version>${excella-reports.version}</version>
     </dependency>
   </dependencies>
   <build>

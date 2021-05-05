@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+    xmlns:p="http://primefaces.org/ui">
+
+    <f:view contentType="text/html;charset=UTF-8" encoding="UTF-8">
+        <h:head>
+            <title>Report Export</title>
+            <h:outputStylesheet name="css/primeflex.min.css" />
+        </h:head>
+        <h:body>
+        <h:form enctype="multipart/form-data">
+            <p:messages showSummary="false" showDetail="true">
+                <p:autoUpdate />
+            </p:messages>
+            <div class="ui-fluid">
+                <div class="p-field">
+                    <p:outputLabel for="@next" value="対象年月" />
+                    <p:datePicker
+                        value="#{reportExportView.parameter.targetMonth}"
+                        required="true"
+                        view="month"
+                        pattern="yyyy/MM"
+                        yearNavigator="true" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="@next" value="日付タグ(連番: __N__)" />
+                    <p:inputText value="#{reportExportView.parameter.dateTag}"
+                        required="true" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="@next" value="出勤時刻タグ(連番: __N__)" />
+                    <p:inputText value="#{reportExportView.parameter.workStartTimeTag}"
+                        required="true" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="@next" value="退勤時刻タグ(連番: __N__)" />
+                    <p:inputText value="#{reportExportView.parameter.workEndTimeTag}"
+                        required="true" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="@next" value="休憩時間タグ(連番: __N__)" />
+                    <p:inputText value="#{reportExportView.parameter.restTimeTag}" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="@next" value="タスクコードタグ(連番: __N__)" />
+                    <p:inputText value="#{reportExportView.parameter.taskCodeTag}" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="@next" value="タスク名タグ(連番: __N__)" />
+                    <p:inputText value="#{reportExportView.parameter.taskNameTag}" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="@next" value="タスク毎作業時間タグ(タスク連番: __M__, 日付連番: __N__)" />
+                    <p:inputText value="#{reportExportView.parameter.taskWorkTimeTag}" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="@next" value="テンプレート" />
+                    <p:fileUpload value="#{reportExportView.templateFile}" mode="simple" skinSimple="true" />
+                </div>
+                <div class="p-field">
+                    <p:outputLabel for="@next" value="勤務表シート名" />
+                    <p:inputText required="true" value="#{reportExportView.parameter.templateSheetName}" />
+                </div>
+                <div class="p-field">
+                    <p:commandButton value="出力" ajax="false" action="#{reportExportView.processExport}" validateClient="true" />
+                    <p:commandButton value="Download" widgetVar="downloadTrigger" style="visibility: hidden">
+                        <p:fileDownload value="#{reportExportView.reportContent}" />
+                    </p:commandButton>
+                </div>
+            </div>
+        </h:form>
+        </h:body>
+    </f:view>
+</html>

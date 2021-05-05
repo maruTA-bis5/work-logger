@@ -22,8 +22,9 @@
                         <p:menuitem value="Mattermost config" url="mattermostConfig.xhtml" icon="pi pi-comment" />
                     </p:submenu>
                     <p:submenu label="Report" icon="pi pi-chart-bar">
-                        <p:menuitem value="monthly report" icon="pi pi-table" url="monthlyReport.xhtml" />
                         <p:menuitem value="today's manhour" icon="pi pi-clock" actionListener="#{workTaskController.openReport}" />
+                        <p:menuitem value="monthly report" icon="pi pi-table" url="monthlyReport.xhtml" />
+                        <p:menuitem value="export" icon="pi pi-file-excel" url="reportExport.xhtml" />
                     </p:submenu>
                     <f:facet name="options">
                         <p:commandButton value="Logout" icon="pi pi-sign-out" action="#{userController.logout}" />
