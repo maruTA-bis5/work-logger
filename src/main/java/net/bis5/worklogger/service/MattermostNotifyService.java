@@ -20,7 +20,7 @@ public class MattermostNotifyService {
             return;
         }
         MattermostConfig config = configOpt.get();
-        try (var client = new MattermostClient(config.mattermostUrl)) {
+        try (var client = MattermostClient.builder().url(config.mattermostUrl).ignoreUnknownProperties().build()) {
             ApiResponse<User> loginResult = client.login(config.mattermostUsername, config.mattermostPassword);
             if (loginResult.hasError()) {
                 return;
