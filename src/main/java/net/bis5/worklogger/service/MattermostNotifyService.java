@@ -22,9 +22,11 @@ public class MattermostNotifyService {
         MattermostConfig config = configOpt.get();
         try (var client = MattermostClient.builder().url(config.mattermostUrl).ignoreUnknownProperties().build()) {
             ApiResponse<User> loginResult = client.login(config.mattermostUsername, config.mattermostPassword);
+            /* see mattermost4j#358
             if (loginResult.hasError()) {
                 return;
             }
+            */
             String message = createMessage(event);
             var post = new Post(config.channelId, message);
             client.createPost(post);
