@@ -50,7 +50,7 @@ public class MattermostConfigView implements Serializable {
     }
 
     public void testConnection() {
-        try (var client = new MattermostClient(config.mattermostUrl)) {
+        try (var client = MattermostClient.builder().url(config.mattermostUrl).ignoreUnknownProperties().build()) {
             ApiResponse<User> loginResult = client.login(config.mattermostUsername, config.mattermostPassword);
             if (loginResult.hasError()) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Unable to login", null));
@@ -74,7 +74,7 @@ public class MattermostConfigView implements Serializable {
     }
 
     public void onTeamChanged() {
-        try (var client = new MattermostClient(config.mattermostUrl)) {
+        try (var client = MattermostClient.builder().url(config.mattermostUrl).ignoreUnknownProperties().build()) {
             ApiResponse<User> loginResult = client.login(config.mattermostUsername, config.mattermostPassword);
             if (loginResult.hasError()) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Unable to login", null));
