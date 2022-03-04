@@ -52,10 +52,11 @@ public class MattermostConfigView implements Serializable {
     public void testConnection() {
         try (var client = MattermostClient.builder().url(config.mattermostUrl).ignoreUnknownProperties().build()) {
             ApiResponse<User> loginResult = client.login(config.mattermostUsername, config.mattermostPassword);
+            /* see mattermost4j#358
             if (loginResult.hasError()) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Unable to login", null));
                 return;
-            }
+            }*/
             User mmUser = loginResult.readEntity();
             this.teams = client.getTeamsForUser(mmUser.getId()).readEntity().stream()
                 .map(t -> new SelectItem(t.getId(), t.getDisplayName()))
@@ -76,10 +77,12 @@ public class MattermostConfigView implements Serializable {
     public void onTeamChanged() {
         try (var client = MattermostClient.builder().url(config.mattermostUrl).ignoreUnknownProperties().build()) {
             ApiResponse<User> loginResult = client.login(config.mattermostUsername, config.mattermostPassword);
+            /* see mattermost4j#358
             if (loginResult.hasError()) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Unable to login", null));
                 return;
             }
+            */
             User mmUser = loginResult.readEntity();
             channels = client.getChannelsForTeamForUser(config.teamId, mmUser.getId()).readEntity().stream()
                 .map(c -> new SelectItem(c.getId(), c.getDisplayName()))
